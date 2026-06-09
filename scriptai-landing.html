@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScriptAI — YouTube Scripts Written by AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --purple: #534AB7;
+    --purple-light: #EEEDFE;
+    --purple-dark: #3C3489;
+    --purple-deep: #26215C;
+    --text: #0f0f0f;
+    --text-muted: #6b6b6b;
+    --text-faint: #aaaaaa;
+    --bg: #ffffff;
+    --bg-soft: #f8f7ff;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.14);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+  /* NAV */
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo-icon { width: 32px; height: 32px; background: var(--purple); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .nav-logo-icon svg { width: 18px; height: 18px; fill: white; }
+  .nav-logo-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+  .nav-logo-name span { color: var(--purple); }
+  .nav-links { display: flex; align-items: center; gap: 2rem; }
+  .nav-links a { font-size: 14px; color: var(--text-muted); text-decoration: none; transition: color 0.15s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta { background: var(--purple); color: white; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; padding: 8px 20px; border-radius: var(--radius-sm); text-decoration: none; transition: opacity 0.15s; }
+  .nav-cta:hover { opacity: 0.9; }
+
+  /* HERO */
+  .hero { padding: 6rem 2rem 5rem; text-align: center; background: var(--bg-soft); position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(83,74,183,0.08) 0%, transparent 70%); pointer-events: none; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--purple-light); color: var(--purple-dark); font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 20px; margin-bottom: 1.5rem; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(36px, 6vw, 64px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 1.25rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+  .hero h1 span { color: var(--purple); }
+  .hero-sub { font-size: 18px; color: var(--text-muted); max-width: 520px; margin: 0 auto 2.5rem; line-height: 1.7; }
+  .hero-btns { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 3rem; }
+  .btn-primary { background: var(--purple); color: white; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 600; padding: 14px 32px; border-radius: var(--radius-sm); text-decoration: none; transition: opacity 0.15s; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-secondary { background: white; color: var(--text); font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 600; padding: 14px 32px; border-radius: var(--radius-sm); text-decoration: none; border: 1.5px solid var(--border-strong); transition: border-color 0.15s; }
+  .btn-secondary:hover { border-color: var(--purple); color: var(--purple); }
+  .hero-stats { display: flex; align-items: center; justify-content: center; gap: 2.5rem; flex-wrap: wrap; }
+  .hero-stat { text-align: center; }
+  .hero-stat-num { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; color: var(--text); }
+  .hero-stat-label { font-size: 13px; color: var(--text-muted); }
+
+  /* DEMO PREVIEW */
+  .demo { padding: 4rem 2rem; max-width: 900px; margin: 0 auto; }
+  .demo-card { background: white; border: 1px solid var(--border-strong); border-radius: var(--radius); overflow: hidden; }
+  .demo-topbar { background: var(--bg-soft); padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .demo-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .demo-url { flex: 1; background: white; border: 1px solid var(--border); border-radius: 6px; padding: 4px 12px; font-size: 12px; color: var(--text-muted); text-align: center; }
+  .demo-body { padding: 2rem; }
+  .demo-input-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 1rem; }
+  .demo-input { background: var(--bg-soft); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 14px; color: var(--text); font-family: 'Inter', sans-serif; width: 100%; }
+  .demo-generate { background: var(--purple); color: white; border: none; border-radius: var(--radius-sm); padding: 12px 24px; font-size: 14px; font-weight: 600; font-family: 'Syne', sans-serif; cursor: pointer; white-space: nowrap; }
+  .demo-sections { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+  .demo-section { background: var(--bg-soft); border-radius: var(--radius-sm); padding: 12px 14px; }
+  .demo-section-tag { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .tag-hook { color: #A32D2D; }
+  .tag-intro { color: #854F0B; }
+  .tag-body { color: #0C447C; }
+  .tag-cta { color: #27500A; }
+  .demo-section-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+  /* FEATURES */
+  .features { padding: 5rem 2rem; background: var(--bg-soft); }
+  .features-inner { max-width: 1000px; margin: 0 auto; }
+  .section-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--purple); margin-bottom: 0.75rem; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: clamp(28px, 4vw, 42px); font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.75rem; }
+  .section-sub { font-size: 17px; color: var(--text-muted); max-width: 500px; line-height: 1.7; margin-bottom: 3rem; }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .feature-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+  .feature-icon { width: 44px; height: 44px; background: var(--purple-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+  .feature-icon svg { width: 22px; height: 22px; stroke: var(--purple); fill: none; stroke-width: 2; }
+  .feature-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .feature-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+
+  /* HOW IT WORKS */
+  .how { padding: 5rem 2rem; max-width: 900px; margin: 0 auto; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; margin-top: 3rem; }
+  .step { text-align: center; }
+  .step-num { width: 48px; height: 48px; background: var(--purple); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin: 0 auto 1rem; }
+  .step-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .step-desc { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+
+  /* PRICING */
+  .pricing { padding: 5rem 2rem; background: var(--bg-soft); }
+  .pricing-inner { max-width: 800px; margin: 0 auto; text-align: center; }
+  .pricing-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 3rem; text-align: left; }
+  .pricing-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; }
+  .pricing-card.featured { border: 2px solid var(--purple); position: relative; }
+  .featured-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--purple); color: white; font-size: 12px; font-weight: 600; padding: 4px 16px; border-radius: 20px; font-family: 'Syne', sans-serif; white-space: nowrap; }
+  .pricing-plan { font-size: 13px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+  .pricing-price { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 0.25rem; }
+  .pricing-price span { font-size: 18px; font-weight: 500; color: var(--text-muted); }
+  .pricing-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .pricing-features { list-style: none; margin-bottom: 2rem; }
+  .pricing-features li { font-size: 14px; padding: 6px 0; display: flex; align-items: center; gap: 8px; }
+  .pricing-features li::before { content: '✓'; color: var(--purple); font-weight: 700; flex-shrink: 0; }
+  .pricing-btn { display: block; text-align: center; padding: 13px; border-radius: var(--radius-sm); font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; text-decoration: none; transition: opacity 0.15s; }
+  .pricing-btn-free { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border-strong); }
+  .pricing-btn-free:hover { border-color: var(--purple); color: var(--purple); }
+  .pricing-btn-pro { background: var(--purple); color: white; }
+  .pricing-btn-pro:hover { opacity: 0.9; }
+
+  /* FAQ */
+  .faq { padding: 5rem 2rem; max-width: 700px; margin: 0 auto; }
+  .faq-item { border-bottom: 1px solid var(--border); padding: 1.25rem 0; cursor: pointer; }
+  .faq-q { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .faq-a { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-top: 10px; display: none; }
+  .faq-item.open .faq-a { display: block; }
+  .faq-arrow { font-size: 18px; color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+
+  /* CTA BANNER */
+  .cta-banner { background: var(--purple-deep); color: white; padding: 5rem 2rem; text-align: center; }
+  .cta-banner h2 { font-family: 'Syne', sans-serif; font-size: clamp(28px, 4vw, 44px); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1rem; }
+  .cta-banner p { font-size: 17px; opacity: 0.75; margin-bottom: 2rem; }
+  .cta-banner .btn-white { background: white; color: var(--purple-deep); font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; padding: 14px 36px; border-radius: var(--radius-sm); text-decoration: none; display: inline-block; transition: opacity 0.15s; }
+  .cta-banner .btn-white:hover { opacity: 0.92; }
+
+  /* FOOTER */
+  footer { padding: 2rem; text-align: center; font-size: 13px; color: var(--text-faint); border-top: 1px solid var(--border); }
+
+  @media (max-width: 600px) {
+    nav .nav-links { display: none; }
+    .hero { padding: 4rem 1.25rem 3rem; }
+    .demo-input-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>
+    </div>
+    <div class="nav-logo-name">Script<span>AI</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+  <a href="https://scriptai7.netlify.app" class="nav-cta">Try for free →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">✦ AI-powered script generation</div>
+  <h1>YouTube scripts,<br><span>written in seconds</span></h1>
+  <p class="hero-sub">Stop staring at a blank page. ScriptAI writes your full YouTube script — hook, intro, body, and call to action — instantly.</p>
+  <div class="hero-btns">
+    <a href="https://scriptai7.netlify.app" class="btn-primary">Start for free →</a>
+    <a href="#how" class="btn-secondary">See how it works</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">30s</div>
+      <div class="hero-stat-label">Average script time</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">5+</div>
+      <div class="hero-stat-label">Script styles</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">3</div>
+      <div class="hero-stat-label">Free scripts to start</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">$0</div>
+      <div class="hero-stat-label">To get started</div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO PREVIEW -->
+<section class="demo">
+  <div class="demo-card">
+    <div class="demo-topbar">
+      <div class="demo-dot" style="background:#ff5f57;"></div>
+      <div class="demo-dot" style="background:#febc2e;"></div>
+      <div class="demo-dot" style="background:#28c840;"></div>
+      <div class="demo-url">scriptai.com</div>
+    </div>
+    <div class="demo-body">
+      <div class="demo-input-row">
+        <input class="demo-input" value="5 AI tools that make money online" readonly>
+        <button class="demo-generate">✦ Generate</button>
+      </div>
+      <div class="demo-sections">
+        <div class="demo-section">
+          <div class="demo-section-tag tag-hook">Hook</div>
+          <div class="demo-section-text">What if I told you that 5 free AI tools could replace your entire content team? Stay with me — because by the end of this video, you'll never write anything manually again...</div>
+        </div>
+        <div class="demo-section">
+          <div class="demo-section-tag tag-intro">Intro</div>
+          <div class="demo-section-text">Hey everyone, welcome back! Today we're diving into the exact AI toolkit I use to save 10+ hours every single week. These tools are free, easy to use, and they work...</div>
+        </div>
+        <div class="demo-section">
+          <div class="demo-section-tag tag-body">Main body</div>
+          <div class="demo-section-text">Tool number one is ScriptAI — and yes, I'm starting here because this is the one that changed everything for me. Instead of spending hours on scripts, I just type my topic and...</div>
+        </div>
+        <div class="demo-section">
+          <div class="demo-section-tag tag-cta">Call to action</div>
+          <div class="demo-section-text">If this video helped you, smash that like button and subscribe — I drop new AI tools and money-making strategies every week. Drop a comment below telling me which tool...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="features-inner">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything you need to<br>script faster</h2>
+    <p class="section-sub">Built specifically for YouTubers who want to spend less time writing and more time creating.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-title">Lightning fast</div>
+        <div class="feature-desc">Get a full ready-to-record script in under 30 seconds. No waiting, no loading screens, just instant scripts.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-title">Any style, any tone</div>
+        <div class="feature-desc">Educational, entertaining, motivational, storytelling — ScriptAI matches your unique voice and channel style.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-title">Full structure included</div>
+        <div class="feature-desc">Every script comes with a hook, intro, main body, and call to action — the proven formula that keeps viewers watching.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-title">Any video length</div>
+        <div class="feature-desc">Whether you make 3-minute shorts or 20-minute deep dives, ScriptAI scales your script to the perfect length.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-title">Any niche</div>
+        <div class="feature-desc">Tech, finance, fitness, gaming, cooking — ScriptAI works for every niche with equally great results.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="feature-title">One-click copy</div>
+        <div class="feature-desc">Copy your entire script to clipboard with one click. Paste it straight into your recording notes or teleprompter app.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="section-label">How it works</div>
+  <h2 class="section-title">From idea to script<br>in 3 steps</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Enter your topic</div>
+      <div class="step-desc">Type your video idea, choose your target audience, tone, and video length.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">Hit generate</div>
+      <div class="step-desc">Our AI writes your full script in seconds — hook, intro, body, and CTA all included.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">Record & publish</div>
+      <div class="step-desc">Copy your script, hit record, and publish. It's that simple. No more writer's block.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="pricing-inner">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Simple, honest pricing</h2>
+    <p class="section-sub" style="margin: 0 auto 0;">Start free. Upgrade when you're ready. Cancel anytime.</p>
+    <div class="pricing-cards">
+      <div class="pricing-card">
+        <div class="pricing-plan">Free</div>
+        <div class="pricing-price">$0</div>
+        <div class="pricing-desc">Perfect for trying ScriptAI and generating your first scripts.</div>
+        <ul class="pricing-features">
+          <li>3 free scripts</li>
+          <li>All tones & styles</li>
+          <li>All video lengths</li>
+          <li>Hook, intro, body & CTA</li>
+          <li>One-click copy</li>
+        </ul>
+        <a href="https://scriptai7.netlify.app" class="pricing-btn pricing-btn-free">Get started free</a>
+      </div>
+      <div class="pricing-card featured">
+        <div class="featured-badge">Most popular</div>
+        <div class="pricing-plan">Pro</div>
+        <div class="pricing-price">$19 <span>/ month</span></div>
+        <div class="pricing-desc">For serious creators who publish consistently and need unlimited scripts.</div>
+        <ul class="pricing-features">
+          <li>Unlimited scripts</li>
+          <li>All tones & styles</li>
+          <li>All video lengths</li>
+          <li>Hook, intro, body & CTA</li>
+          <li>Title ideas included</li>
+          <li>Priority generation</li>
+          <li>Cancel anytime</li>
+        </ul>
+        <a href="https://buy.stripe.com/4gMaEQbs1dJc0zC2Qxb7y00" class="pricing-btn pricing-btn-pro">Upgrade to Pro →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="section-label">FAQ</div>
+  <h2 class="section-title" style="margin-bottom: 2rem;">Common questions</h2>
+
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">Is ScriptAI really free to start? <span class="faq-arrow">▾</span></div>
+    <div class="faq-a">Yes! You get 3 full scripts completely free — no credit card required. Try it out and see the quality before you commit to anything.</div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">What niches does ScriptAI work for? <span class="faq-arrow">▾</span></div>
+    <div class="faq-a">ScriptAI works for any YouTube niche — tech, finance, fitness, gaming, cooking, travel, education, motivation, and more. If you can describe your topic, ScriptAI can write the script.</div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">How long does it take to generate a script? <span class="faq-arrow">▾</span></div>
+    <div class="faq-a">Most scripts are generated in under 30 seconds. The AI writes your full hook, intro, main body, and call to action almost instantly.</div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">Can I cancel my Pro subscription anytime? <span class="faq-arrow">▾</span></div>
+    <div class="faq-a">Absolutely. Cancel anytime with no questions asked. You keep access until the end of your billing period.</div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q">Will the scripts sound like me? <span class="faq-arrow">▾</span></div>
+    <div class="faq-a">You can choose from 5 different tones — educational, entertaining, motivational, storytelling, and conversational — so the script matches your channel's vibe. Most creators make minor edits to add their personal touch.</div>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section class="cta-banner">
+  <h2>Ready to script faster?</h2>
+  <p>Join creators who've stopped wasting hours on scripts. Start free today.</p>
+  <a href="https://scriptai7.netlify.app" class="btn-white">Try ScriptAI free →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  ScriptAI © 2026 · Built with AI · Made for creators · <a href="https://scriptai7.netlify.app" style="color: var(--purple); text-decoration: none;">Launch app →</a>
+</footer>
+
+<script>
+  function toggleFaq(el) {
+    el.classList.toggle('open');
+  }
+</script>
+
+</body>
+</html>
